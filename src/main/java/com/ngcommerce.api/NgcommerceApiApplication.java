@@ -1,4 +1,4 @@
-package com.ngcommerce_api;
+package com.ngcommerce.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
