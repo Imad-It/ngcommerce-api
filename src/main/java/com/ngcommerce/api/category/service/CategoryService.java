@@ -1,13 +1,14 @@
+
 package com.ngcommerce.api.category.service;
 
 import com.ngcommerce.api.category.entity.Category;
+import com.ngcommerce.api.category.exception.DuplicateResourceException;
+import com.ngcommerce.api.category.exception.ResourceNotFoundException;
 import com.ngcommerce.api.category.repository.CategoryRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,19 +30,28 @@ public class CategoryService {
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
+                        new ResourceNotFoundException(
                                 "Category not found with id: " + id
                         )
                 );
     }
 
+    @Transactional(readOnly = true)
+    public Category getCategoryBySlug(String slug) {
+        return categoryRepository.findBySlug(slug)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found with slug: " + slug
+                        )
+                );
+    }
+
     public Category createCategory(Category category) {
+
         category.setId(null);
 
         if (categoryRepository.existsBySlug(category.getSlug())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new DuplicateResourceException(
                     "A category with this slug already exists"
             );
         }
@@ -53,11 +63,9 @@ public class CategoryService {
         Category existing = getCategoryById(id);
 
         categoryRepository.findBySlug(request.getSlug())
-                .filter(category ->
-                        !category.getId().equals(id))
+                .filter(category -> !category.getId().equals(id))
                 .ifPresent(category -> {
-                    throw new ResponseStatusException(
-                            HttpStatus.CONFLICT,
+                    throw new DuplicateResourceException(
                             "A category with this slug already exists"
                     );
                 });
@@ -72,14 +80,5 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = getCategoryById(id);
         categoryRepository.delete(category);
-    }
-
-
-    public Category getCategoryBySlug(String slug) {
-        return categoryRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Category not found"
-                ));
     }
 }
