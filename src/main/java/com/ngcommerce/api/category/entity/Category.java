@@ -52,6 +52,7 @@ public class Category {
 
     @PreUpdate
     protected void onUpdate() {
+
         this.updatedAt = Instant.now();
     }
 }

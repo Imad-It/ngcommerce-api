@@ -1,6 +1,8 @@
 
 package com.ngcommerce.api.category.service;
 
+import com.ngcommerce.api.category.dto.CategoryRequest;
+import com.ngcommerce.api.category.dto.CategoryResponse;
 import com.ngcommerce.api.category.entity.Category;
 import com.ngcommerce.api.category.exception.DuplicateResourceException;
 import com.ngcommerce.api.category.exception.ResourceNotFoundException;
@@ -20,14 +22,70 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public List<Category> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll(
-                Sort.by(Sort.Direction.ASC, "id")
-        );
+                Sort.by(Sort.Direction.ASC, "id"))
+                        .stream()
+                        .map(this:: toResponse)
+                        .toList();
+
     }
 
     @Transactional(readOnly = true)
-    public Category getCategoryById(Long id) {
+    public CategoryResponse getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category not found with id: " + id));
+
+        return toResponse(category);
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryResponse getCategoryBySlug(String slug) {
+        Category category= categoryRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with slug: " + slug));
+                return toResponse(category);
+    }
+
+    public CategoryResponse createCategory(CategoryRequest request) {
+                 if (categoryRepository.existsBySlug(request.getSlug())) {
+            throw new DuplicateResourceException("A category with this slug already exists");
+        }
+
+        Category category = new Category();
+        category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setImage(request.getImage());
+
+        Category savedCategory = categoryRepository.save(category);
+
+        return toResponse(savedCategory);
+    }
+
+    public CategoryResponse updateCategory(Long id, CategoryRequest request) {
+        Category existing = findCategoryById(id);
+
+        categoryRepository.findBySlug(request.getSlug())
+                .filter(category -> !category.getId().equals(id))
+                .ifPresent(category -> {
+                    throw new DuplicateResourceException("A category with this slug already exists");
+                });
+
+        existing.setName(request.getName());
+        existing.setSlug(request.getSlug());
+        existing.setImage(request.getImage());
+
+        Category updatedCategory = categoryRepository.save(existing);
+
+        return toResponse(updatedCategory);
+    }
+
+    public void deleteCategory(Long id) {
+        Category category = findCategoryById(id);
+        categoryRepository.delete(category);
+    }
+
+    private Category findCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -35,50 +93,14 @@ public class CategoryService {
                         )
                 );
     }
-
-    @Transactional(readOnly = true)
-    public Category getCategoryBySlug(String slug) {
-        return categoryRepository.findBySlug(slug)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Category not found with slug: " + slug
-                        )
-                );
-    }
-
-    public Category createCategory(Category category) {
-
-        category.setId(null);
-
-        if (categoryRepository.existsBySlug(category.getSlug())) {
-            throw new DuplicateResourceException(
-                    "A category with this slug already exists"
-            );
-        }
-
-        return categoryRepository.save(category);
-    }
-
-    public Category updateCategory(Long id, Category request) {
-        Category existing = getCategoryById(id);
-
-        categoryRepository.findBySlug(request.getSlug())
-                .filter(category -> !category.getId().equals(id))
-                .ifPresent(category -> {
-                    throw new DuplicateResourceException(
-                            "A category with this slug already exists"
-                    );
-                });
-
-        existing.setName(request.getName());
-        existing.setSlug(request.getSlug());
-        existing.setImage(request.getImage());
-
-        return categoryRepository.save(existing);
-    }
-
-    public void deleteCategory(Long id) {
-        Category category = getCategoryById(id);
-        categoryRepository.delete(category);
+    private CategoryResponse toResponse(Category category) {
+        return new CategoryResponse(
+                category.getId(),
+                category.getName(),
+                category.getSlug(),
+                category.getImage(),
+                category.getCreationAt(),
+                category.getUpdatedAt()
+        );
     }
 }

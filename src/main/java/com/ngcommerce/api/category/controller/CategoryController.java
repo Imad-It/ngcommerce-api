@@ -1,5 +1,7 @@
 package com.ngcommerce.api.category.controller;
 
+import com.ngcommerce.api.category.dto.CategoryRequest;
+import com.ngcommerce.api.category.dto.CategoryResponse;
 import com.ngcommerce.api.category.entity.Category;
 import com.ngcommerce.api.category.service.CategoryService;
 import jakarta.validation.Valid;
@@ -19,26 +21,26 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
 
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/slug/{slug}")
-    public ResponseEntity<Category> getCategoryBySlug(
+    public ResponseEntity<CategoryResponse> getCategoryBySlug(
             @PathVariable String slug) {
         return ResponseEntity.ok(categoryService.getCategoryBySlug(slug));
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
 
-        Category created = categoryService.createCategory(category);
+        CategoryResponse created = categoryService.createCategory(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -46,11 +48,11 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(
+    public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody Category category) {
+            @Valid @RequestBody CategoryRequest request) {
 
-        return ResponseEntity.ok(categoryService.updateCategory(id, category));
+        return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
 
     @DeleteMapping("/{id}")
