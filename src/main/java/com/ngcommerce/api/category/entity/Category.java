@@ -1,6 +1,5 @@
 package com.ngcommerce.api.category.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,7 +18,6 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Category name is required")
@@ -35,11 +33,9 @@ public class Category {
     @Column(columnDefinition = "TEXT")
     private String image;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false, updatable = false)
     private Instant creationAt;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false)
     private Instant updatedAt;
 
@@ -52,7 +48,6 @@ public class Category {
 
     @PreUpdate
     protected void onUpdate() {
-
         this.updatedAt = Instant.now();
     }
 }

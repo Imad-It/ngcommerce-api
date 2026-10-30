@@ -1,4 +1,3 @@
-
 package com.ngcommerce.api.category.service;
 
 import com.ngcommerce.api.category.dto.CategoryRequest;
@@ -24,10 +23,10 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll(
-                Sort.by(Sort.Direction.ASC, "id"))
-                        .stream()
-                        .map(this:: toResponse)
-                        .toList();
+                        Sort.by(Sort.Direction.ASC, "id"))
+                .stream()
+                .map(this::toResponse)
+                .toList();
 
     }
 
@@ -42,13 +41,13 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryResponse getCategoryBySlug(String slug) {
-        Category category= categoryRepository.findBySlug(slug)
+        Category category = categoryRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with slug: " + slug));
-                return toResponse(category);
+        return toResponse(category);
     }
 
     public CategoryResponse createCategory(CategoryRequest request) {
-                 if (categoryRepository.existsBySlug(request.getSlug())) {
+        if (categoryRepository.existsBySlug(request.getSlug())) {
             throw new DuplicateResourceException("A category with this slug already exists");
         }
 
@@ -93,6 +92,7 @@ public class CategoryService {
                         )
                 );
     }
+
     private CategoryResponse toResponse(Category category) {
         return new CategoryResponse(
                 category.getId(),

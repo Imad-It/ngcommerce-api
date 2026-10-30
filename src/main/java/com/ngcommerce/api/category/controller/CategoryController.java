@@ -2,7 +2,6 @@ package com.ngcommerce.api.category.controller;
 
 import com.ngcommerce.api.category.dto.CategoryRequest;
 import com.ngcommerce.api.category.dto.CategoryResponse;
-import com.ngcommerce.api.category.entity.Category;
 import com.ngcommerce.api.category.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,6 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
-
 
 
 }
