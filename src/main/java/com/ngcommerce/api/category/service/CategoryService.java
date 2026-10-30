@@ -22,8 +22,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
-        return categoryRepository.findAll(
-                        Sort.by(Sort.Direction.ASC, "id"))
+        return categoryRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -33,8 +32,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryResponse getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
 
         return toResponse(category);
     }
@@ -47,14 +45,14 @@ public class CategoryService {
     }
 
     public CategoryResponse createCategory(CategoryRequest request) {
-        if (categoryRepository.existsBySlug(request.getSlug())) {
+        if (categoryRepository.existsBySlug(request.slug())) {
             throw new DuplicateResourceException("A category with this slug already exists");
         }
 
         Category category = new Category();
-        category.setName(request.getName());
-        category.setSlug(request.getSlug());
-        category.setImage(request.getImage());
+        category.setName(request.name());
+        category.setSlug(request.slug());
+        category.setImage(request.image());
 
         Category savedCategory = categoryRepository.save(category);
 
@@ -64,15 +62,15 @@ public class CategoryService {
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
         Category existing = findCategoryById(id);
 
-        categoryRepository.findBySlug(request.getSlug())
+        categoryRepository.findBySlug(request.slug())
                 .filter(category -> !category.getId().equals(id))
                 .ifPresent(category -> {
                     throw new DuplicateResourceException("A category with this slug already exists");
                 });
 
-        existing.setName(request.getName());
-        existing.setSlug(request.getSlug());
-        existing.setImage(request.getImage());
+        existing.setName(request.name());
+        existing.setSlug(request.slug());
+        existing.setImage(request.image());
 
         Category updatedCategory = categoryRepository.save(existing);
 
@@ -86,11 +84,7 @@ public class CategoryService {
 
     private Category findCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Category not found with id: " + id
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     private CategoryResponse toResponse(Category category) {

@@ -1,19 +1,14 @@
-
 package com.ngcommerce.api.category.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.time.Instant;
 
-@Getter
-@AllArgsConstructor
-public class CategoryResponse {
+public record CategoryResponse(
 
-    private Long id;
-    private String name;
-    private String slug;
-    private String image;
-    private Instant creationAt;
-    private Instant updatedAt;
+        Long id,
+        String name,
+        String slug,
+        String image,
+        Instant creationAt,
+        Instant updatedAt
+) {
 }
