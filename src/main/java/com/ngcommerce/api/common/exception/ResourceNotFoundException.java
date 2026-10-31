@@ -1,4 +1,4 @@
-package com.ngcommerce.api.category.exception;
+package com.ngcommerce.api.common.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 
