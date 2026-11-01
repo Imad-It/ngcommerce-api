@@ -93,7 +93,7 @@ public class CategoryService {
                 category.getName(),
                 category.getSlug(),
                 category.getImage(),
-                category.getCreationAt(),
+                category.getCreatedAt(),
                 category.getUpdatedAt()
         );
     }
