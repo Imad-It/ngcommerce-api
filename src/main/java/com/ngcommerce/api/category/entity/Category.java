@@ -2,6 +2,7 @@ package com.ngcommerce.api.category.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,10 @@ public class Category {
     @NotBlank(message = "Category slug is required")
     @Size(max = 180)
     @Column(nullable = false, unique = true, length = 180)
+    @Pattern(
+            regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            message = "Slug must contain only lowercase letters, numbers and hyphens"
+    )
     private String slug;
 
     @Column(columnDefinition = "TEXT")
@@ -39,7 +44,7 @@ public class Category {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private Instant creationAt;
+    private Instant createdAt;
 
     @LastModifiedDate
     @Column(nullable = false)

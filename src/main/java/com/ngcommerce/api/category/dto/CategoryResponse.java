@@ -8,7 +8,7 @@ public record CategoryResponse(
         String name,
         String slug,
         String image,
-        Instant creationAt,
+        Instant createdAt,
         Instant updatedAt
 ) {
 }
