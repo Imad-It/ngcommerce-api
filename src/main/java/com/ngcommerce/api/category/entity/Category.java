@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "categories")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Category extends BaseEntity {
 
     @NotBlank(message = "Category name is required")
@@ -31,5 +33,11 @@ public class Category extends BaseEntity {
     private String slug;
 
     @Column(columnDefinition = "TEXT")
-    private String image;
+    private String imagePath;
+
+    public void update(String name, String slug, String imagePath) {
+        this.name = name;
+        this.slug = slug;
+        this.imagePath = imagePath;
+    }
 }

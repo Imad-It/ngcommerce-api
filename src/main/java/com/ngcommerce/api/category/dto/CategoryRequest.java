@@ -17,9 +17,7 @@ public record CategoryRequest(
                 regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$",
                 message = "Slug must contain only lowercase letters, numbers and hyphens"
         )
-        String slug,
-
-        String image
+        String slug
 ) {
 }
 
